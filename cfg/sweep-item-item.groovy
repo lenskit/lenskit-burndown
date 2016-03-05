@@ -12,6 +12,7 @@ import org.lenskit.baseline.UserMeanItemScorer
 import org.lenskit.knn.NeighborhoodSize
 import org.lenskit.knn.item.ItemItemScorer
 import org.lenskit.knn.item.ItemSimilarity
+import org.lenskit.knn.item.ModelSize
 import org.lenskit.knn.item.model.ItemItemBuildContext
 import org.lenskit.knn.item.model.ItemwiseBuildContextProvider
 
@@ -21,6 +22,7 @@ within (ItemSimilarity) {
 }
 bind (BaselineScorer, ItemScorer) to UserMeanItemScorer
 bind (UserMeanBaseline, ItemScorer) to ItemMeanRatingItemScorer
+set ModelSize to 2000
 
 for (n in [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100]) {
     algorithm("ItemItem") {

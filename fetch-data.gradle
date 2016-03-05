@@ -6,6 +6,12 @@ task fetchML100K(type: FetchDataset, group: 'fetch') {
     dataDir 'data/ml-100k'
 }
 
+task fetchML1M(type: FetchDataset, group: 'fetch') {
+    description 'Fetch MovieLens 1M data set'
+    srcUrl 'http://files.grouplens.org/datasets/movielens/ml-1m.zip'
+    dataDir 'data/ml-1m'
+}
+
 task fetchMLLatestSmall(type: FetchDataset, group: 'fetch') {
     description 'Fetch MovieLenas latest-small data set'
     srcUrl 'http://files.grouplens.org/datasets/movielens/ml-latest-small.zip'

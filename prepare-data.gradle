@@ -18,6 +18,24 @@ task crossfoldML100K(type: Crossfold, group: 'crossfold') {
     outputFormat 'PACK'
 }
 
+task crossfoldML1M(type: Crossfold, group: 'crossfold') {
+    dependsOn fetchML1M
+    outputDir "$buildDir/crossfold/ml-1m"
+
+    input textFile {
+        file 'data/ml-1m/ratings.dat'
+        delimiter '::'
+        domain {
+            minimum 0.5
+            maximum 5.0
+            precision 0.5
+        }
+    }
+    holdout 5
+    partitionCount 5
+    outputFormat 'PACK'
+}
+
 task crossfoldMLLatestSmall(type: Crossfold, group: 'crossfold') {
     dependsOn fetchMLLatestSmall
     outputDir "$buildDir/crossfold/ml-latest-small"

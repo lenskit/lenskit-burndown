@@ -63,13 +63,50 @@ task allML100K(group: 'meta') {
     dependsOn 'sweepFunkSVDML100K'
 }
 
+task evaluateCommonML1M(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldML1M
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    algorithm 'cfg/common-algos.groovy'
+    outputFile "$buildDir/common-ml1m.csv"
+    configure commonMetrics
+}
+
+task sweepItemItemML1M(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldML1M
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    outputFile "$buildDir/sweep-item-item-ml1m.csv"
+    algorithm 'cfg/sweep-item-item.groovy'
+    configure commonMetrics
+}
+
+task sweepFunkSVDML1M(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldML1M
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    outputFile "$buildDir/sweep-item-item-ml1m.csv"
+    algorithm 'cfg/sweep-item-item.groovy'
+    configure commonMetrics
+}
+
+task allML1M(group: 'meta') {
+    description 'Run all ML1M experiments'
+    dependsOn 'evaluateCommonML1M'
+    dependsOn 'sweepItemItemML1M'
+    dependsOn 'sweepFunkSVDML1M'
+}
+
 task evaluateCommonMLLatestSmall(type: TrainTest, group: 'evaluate') {
     dataSet crossfoldMLLatestSmall
     if (useEvalCache) {
         cacheDirectory "$buildDir/eval-cache"
     }
     algorithm 'cfg/common-algos.groovy'
-    outputFile "$buildDir/common-ml100k.csv"
+    outputFile "$buildDir/common-latest-small.csv"
     configure commonMetrics
 }
 
@@ -78,7 +115,7 @@ task sweepItemItemMLLatestSmall(type: TrainTest, group: 'evaluate') {
     if (useEvalCache) {
         cacheDirectory "$buildDir/eval-cache"
     }
-    outputFile "$buildDir/sweep-item-item-ml100k.csv"
+    outputFile "$buildDir/sweep-item-item-latest-small.csv"
     algorithm 'cfg/sweep-item-item.groovy'
     configure commonMetrics
 }
@@ -88,7 +125,7 @@ task sweepFunkSVDMLLatestSmall(type: TrainTest, group: 'evaluate') {
     if (useEvalCache) {
         cacheDirectory "$buildDir/eval-cache"
     }
-    outputFile "$buildDir/sweep-item-item-ml100k.csv"
+    outputFile "$buildDir/sweep-item-item-latest-small.csv"
     algorithm 'cfg/sweep-item-item.groovy'
     configure commonMetrics
 }

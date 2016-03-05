@@ -62,3 +62,45 @@ task allML100K(group: 'meta') {
     dependsOn 'sweepItemItemML100K'
     dependsOn 'sweepFunkSVDML100K'
 }
+
+task evaluateCommonMLLatestSmall(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldMLLatestSmall
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    algorithm 'cfg/common-algos.groovy'
+    outputFile "$buildDir/common-ml100k.csv"
+    configure commonMetrics
+}
+
+task sweepItemItemMLLatestSmall(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldMLLatestSmall
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    outputFile "$buildDir/sweep-item-item-ml100k.csv"
+    algorithm 'cfg/sweep-item-item.groovy'
+    configure commonMetrics
+}
+
+task sweepFunkSVDMLLatestSmall(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldMLLatestSmall
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    outputFile "$buildDir/sweep-item-item-ml100k.csv"
+    algorithm 'cfg/sweep-item-item.groovy'
+    configure commonMetrics
+}
+
+task allMLLatestSmall(group: 'meta') {
+    description 'Run all ML latest-small experiments'
+    dependsOn 'evaluateCommonMLLatestSmall'
+    dependsOn 'sweepItemItemMLLatestSmall'
+    dependsOn 'sweepFunkSVDMLLatestSmall'
+}
+
+task allExperiments {
+    dependsOn allML100K
+    dependsOn allMLLatestSmall
+}

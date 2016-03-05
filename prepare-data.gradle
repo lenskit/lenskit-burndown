@@ -1,0 +1,18 @@
+import org.lenskit.gradle.*
+
+task crossfoldML100K(type: Crossfold, group: 'crossfold') {
+    outputDir "$buildDir/crossfold/ml-100k"
+
+    input textFile {
+        file 'data/ml-100k/u.data'
+        delimiter '\t'
+        domain {
+            minimum 1.0
+            maximum 5.0
+            precision 1.0
+        }
+    }
+    holdout 5
+    partitionCount 5
+    outputFormat 'PACK'
+}

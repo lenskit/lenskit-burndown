@@ -1,0 +1,7 @@
+import org.lenskit.burndown.*
+
+task fetchML100K(type: FetchDataset, group: 'fetch') {
+    description 'Fetch MovieLens 100K data set'
+    srcUrl 'http://files.grouplens.org/datasets/movielens/ml-100k.zip'
+    dataDir 'data/ml-100k'
+}

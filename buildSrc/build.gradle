@@ -1,0 +1,14 @@
+apply plugin: 'groovy'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
+dependencies {
+    compile localGroovy()
+    compile gradleApi()
+    compile 'org.grouplens.lenskit:lenskit-gradle:3.0-SNAPSHOT'
+}

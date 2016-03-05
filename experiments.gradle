@@ -1,0 +1,64 @@
+import org.lenskit.gradle.*
+
+if (project.hasProperty('useCache')) {
+    ext.useEvalCache = project.getProperty('useEvalCache') == 'true'
+} else {
+    ext.useEvalCache = true
+}
+
+def commonMetrics = {
+    predict {
+        metric 'coverage'
+        metric 'rmse'
+        metric 'ndcg'
+    }
+    recommend {
+        listSize 10
+        candidateItems 'user.testItems + pickRandom(allItems - user.trainItems, 95)'
+        metric 'length'
+        metric 'ndcg'
+        metric('mrr') {
+            goodItems 'user.testItems'
+        }
+        metric('map') {
+            goodItems 'user.testItems'
+        }
+    }
+}
+
+task evaluateCommonML100K(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldML100K
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    algorithm 'cfg/common-algos.groovy'
+    outputFile "$buildDir/common-ml100k.csv"
+    configure commonMetrics
+}
+
+task sweepItemItemML100K(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldML100K
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    outputFile "$buildDir/sweep-item-item-ml100k.csv"
+    algorithm 'cfg/sweep-item-item.groovy'
+    configure commonMetrics
+}
+
+task sweepFunkSVDML100K(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldML100K
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    outputFile "$buildDir/sweep-item-item-ml100k.csv"
+    algorithm 'cfg/sweep-item-item.groovy'
+    configure commonMetrics
+}
+
+task allML100K(group: 'meta') {
+    description 'Run all ML100K experiments'
+    dependsOn 'evaluateCommonML100K'
+    dependsOn 'sweepItemItemML100K'
+    dependsOn 'sweepFunkSVDML100K'
+}

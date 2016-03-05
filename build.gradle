@@ -1,14 +1,30 @@
+import org.lenskit.gradle.*
+
 group 'org.lenskit'
 version '1-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'lenskit'
 
-sourceCompatibility = 1.5
+sourceCompatibility = 1.7
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile 'org.grouplens.lenskit:lenskit-all:3.0-SNAPSHOT'
+    runtime 'org.grouplens.lenskit:lenskit-cli:3.0-SNAPSHOT'
 }
+
+task init << {
+    mkdir 'build'
+    mkdir 'data'
+}
+
+apply from: 'fetch-data.gradle'
+apply from: 'prepare-data.gradle'
+apply from: 'experiments.gradle'

@@ -1,4 +1,5 @@
 import org.grouplens.lenskit.iterative.IterationCount
+import org.grouplens.lenskit.iterative.LearningRate
 import org.grouplens.lenskit.iterative.RegularizationTerm
 import org.lenskit.api.ItemScorer
 import org.lenskit.baseline.BaselineScorer
@@ -12,6 +13,11 @@ bind ItemScorer to FunkSVDItemScorer
 bind (UserMeanBaseline, ItemScorer) to ItemMeanRatingItemScorer
 bind (BaselineScorer, ItemScorer) to UserMeanItemScorer
 set IterationCount to 125
+
+def lr = System.getProperty("svd.lambda")
+if (lr) {
+    set LearningRate to Double.parseDouble(lr)
+}
 
 for (k in [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100]) {
     algorithm("FunkSVD") {

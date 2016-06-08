@@ -34,6 +34,7 @@ task evaluateCommonML100K(type: TrainTest, group: 'evaluate') {
     algorithm 'cfg/common-algos.groovy'
     outputFile "$buildDir/common-ml-100k.csv"
     configure commonMetrics
+    invoker.systemProperty 'svd.lambda', '0.002'
 }
 
 task sweepItemItemML100K(type: TrainTest, group: 'evaluate') {
@@ -54,6 +55,7 @@ task sweepFunkSVDML100K(type: TrainTest, group: 'evaluate') {
     outputFile "$buildDir/sweep-funksvd-ml-100k.csv"
     algorithm 'cfg/sweep-funksvd.groovy'
     configure commonMetrics
+    invoker.systemProperty 'svd.lambda', '0.002'
 }
 
 task allML100K(group: 'meta') {
@@ -61,6 +63,24 @@ task allML100K(group: 'meta') {
     dependsOn 'evaluateCommonML100K'
     dependsOn 'sweepItemItemML100K'
     dependsOn 'sweepFunkSVDML100K'
+}
+
+task analyzeML100K(group: 'analyze', type: Exec) {
+    dependsOn allML100K
+
+    executable 'jupyter'
+    args 'nbconvert', '--to', 'html'
+    args '--output-dir', buildDir
+    args '--output', 'RunAndSweep-ML100K'
+    args '--execute'
+    args 'RunAndSweep.ipynb'
+    environment LK_DATASET: 'ml-100k'
+
+    inputs.file 'RunAndSweep.ipynb'
+    inputs.files evaluateCommonML100K
+    inputs.files sweepItemItemML100K
+    inputs.files sweepFunkSVDML100K
+    outputs.file "$buildDir/RunAndSweep-ML100K.html"
 }
 
 allExperiments.dependsOn allML100K

@@ -1,4 +1,5 @@
 import org.grouplens.lenskit.iterative.IterationCount
+import org.grouplens.lenskit.iterative.LearningRate
 import org.grouplens.lenskit.transform.normalize.*
 import org.grouplens.lenskit.vectors.similarity.CosineVectorSimilarity
 import org.grouplens.lenskit.vectors.similarity.VectorSimilarity
@@ -51,4 +52,8 @@ algorithm ("FunkSVD") {
     bind UserVectorNormalizer to BaselineSubtractingUserVectorNormalizer
     set FeatureCount to 40
     set IterationCount to 125
+    def lr = System.getProperty("svd.lambda")
+    if (lr) {
+        set LearningRate to Double.parseDouble(lr)
+    }
 }

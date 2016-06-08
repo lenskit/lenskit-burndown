@@ -9,6 +9,7 @@ apply plugin: 'lenskit'
 sourceCompatibility = 1.7
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
@@ -25,6 +26,34 @@ task init << {
     mkdir 'data'
 }
 
-apply from: 'fetch-data.gradle'
-apply from: 'prepare-data.gradle'
-apply from: 'experiments.gradle'
+if (project.hasProperty('useCache')) {
+    ext.useEvalCache = project.getProperty('useEvalCache') == 'true'
+} else {
+    ext.useEvalCache = true
+}
+
+ext.commonMetrics = {
+    predict {
+        metric 'coverage'
+        metric 'rmse'
+        metric 'ndcg'
+    }
+    recommend {
+        listSize 10
+        candidateItems 'user.testItems + pickRandom(allItems - user.trainItems, 95)'
+        metric 'length'
+        metric 'ndcg'
+        metric('mrr') {
+            goodItems 'user.testItems'
+        }
+        metric('map') {
+            goodItems 'user.testItems'
+        }
+    }
+}
+
+task allExperiments
+
+apply from: 'gradle/ml-100k.gradle'
+apply from: 'gradle/ml-latest-small.gradle'
+apply from: 'gradle/ml-1m.gradle'

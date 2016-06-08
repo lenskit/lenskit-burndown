@@ -1,0 +1,66 @@
+import org.lenskit.burndown.FetchDataset
+import org.lenskit.gradle.*
+
+task fetchML1M(type: FetchDataset, group: 'fetch') {
+    description 'Fetch MovieLens 1M data set'
+    srcUrl 'http://files.grouplens.org/datasets/movielens/ml-1m.zip'
+    dataDir 'data/ml-1m'
+}
+
+task crossfoldML1M(type: Crossfold, group: 'crossfold') {
+    dependsOn fetchML1M
+    outputDir "$buildDir/crossfold/ml-1m"
+
+    input textFile {
+        file 'data/ml-1m/ratings.dat'
+        delimiter '::'
+        domain {
+            minimum 0.5
+            maximum 5.0
+            precision 0.5
+        }
+    }
+    holdout 5
+    partitionCount 5
+    outputFormat 'PACK'
+    includeTimestamps false
+}
+
+task evaluateCommonML1M(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldML1M
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    algorithm 'cfg/common-algos.groovy'
+    outputFile "$buildDir/common-ml-1m.csv"
+    configure commonMetrics
+}
+
+task sweepItemItemML1M(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldML1M
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    outputFile "$buildDir/sweep-item-item-ml-1m.csv"
+    algorithm 'cfg/sweep-item-item.groovy'
+    configure commonMetrics
+}
+
+task sweepFunkSVDML1M(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldML1M
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    outputFile "$buildDir/sweep-funksvd-ml-1m.csv"
+    algorithm 'cfg/sweep-funksvd.groovy'
+    configure commonMetrics
+}
+
+task allML1M(group: 'meta') {
+    description 'Run all ML1M experiments'
+    dependsOn 'evaluateCommonML1M'
+    dependsOn 'sweepItemItemML1M'
+    dependsOn 'sweepFunkSVDML1M'
+}
+
+allExperiments.dependsOn allML1M

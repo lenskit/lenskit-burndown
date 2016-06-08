@@ -1,0 +1,67 @@
+import org.lenskit.burndown.FetchDataset
+import org.lenskit.gradle.*
+
+task fetchMLLatestSmall(type: FetchDataset, group: 'fetch') {
+    description 'Fetch MovieLenas latest-small data set'
+    srcUrl 'http://files.grouplens.org/datasets/movielens/ml-latest-small.zip'
+    dataDir 'data/ml-latest-small'
+}
+
+task crossfoldMLLatestSmall(type: Crossfold, group: 'crossfold') {
+    dependsOn fetchMLLatestSmall
+    outputDir "$buildDir/crossfold/ml-latest-small"
+
+    input textFile {
+        file 'data/ml-latest-small/ratings.csv'
+        delimiter ','
+        headerLines 1
+        domain {
+            minimum 0.5
+            maximum 5.0
+            precision 0.5
+        }
+    }
+    holdout 5
+    partitionCount 5
+    outputFormat 'PACK'
+    includeTimestamps false
+}
+
+task evaluateCommonMLLatestSmall(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldMLLatestSmall
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    algorithm 'cfg/common-algos.groovy'
+    outputFile "$buildDir/common-ml-latest-small.csv"
+    configure commonMetrics
+}
+
+task sweepItemItemMLLatestSmall(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldMLLatestSmall
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    outputFile "$buildDir/sweep-item-item-ml-latest-small.csv"
+    algorithm 'cfg/sweep-item-item.groovy'
+    configure commonMetrics
+}
+
+task sweepFunkSVDMLLatestSmall(type: TrainTest, group: 'evaluate') {
+    dataSet crossfoldMLLatestSmall
+    if (useEvalCache) {
+        cacheDirectory "$buildDir/eval-cache"
+    }
+    outputFile "$buildDir/sweep-funksvd-ml-latest-small.csv"
+    algorithm 'cfg/sweep-funksvd.groovy'
+    configure commonMetrics
+}
+
+task allMLLatestSmall(group: 'meta') {
+    description 'Run all ML latest-small experiments'
+    dependsOn 'evaluateCommonMLLatestSmall'
+    dependsOn 'sweepItemItemMLLatestSmall'
+    dependsOn 'sweepFunkSVDMLLatestSmall'
+}
+
+allExperiments.dependsOn allMLLatestSmall

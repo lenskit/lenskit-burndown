@@ -64,4 +64,22 @@ task allMLLatestSmall(group: 'meta') {
     dependsOn 'sweepFunkSVDMLLatestSmall'
 }
 
+task analyzeMLLatestSmall(group: 'analyze', type: Exec) {
+    dependsOn allMLLatestSmall
+
+    executable 'jupyter'
+    args 'nbconvert', '--to', 'html'
+    args '--output-dir', buildDir
+    args '--output', 'RunAndSweep-MLLatestSmall'
+    args '--execute'
+    args 'RunAndSweep.ipynb'
+    environment LK_DATASET: 'ml-latest-small'
+
+    inputs.file 'RunAndSweep.ipynb'
+    inputs.files evaluateCommonMLLatestSmall
+    inputs.files sweepItemItemMLLatestSmall
+    inputs.files sweepFunkSVDMLLatestSmall
+    outputs.file "$buildDir/RunAndSweep-ML100K.html"
+}
+
 allExperiments.dependsOn allMLLatestSmall

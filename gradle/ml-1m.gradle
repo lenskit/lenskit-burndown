@@ -63,4 +63,22 @@ task allML1M(group: 'meta') {
     dependsOn 'sweepFunkSVDML1M'
 }
 
+task analyzeML1M(group: 'analyze', type: Exec) {
+    dependsOn allML1M
+
+    executable 'jupyter'
+    args 'nbconvert', '--to', 'html'
+    args '--output-dir', buildDir
+    args '--output', 'RunAndSweep-ML1M'
+    args '--execute'
+    args 'RunAndSweep.ipynb'
+    environment LK_DATASET: 'ml-1m'
+
+    inputs.file 'RunAndSweep.ipynb'
+    inputs.files evaluateCommonML1M
+    inputs.files sweepItemItemML1M
+    inputs.files sweepFunkSVDML1M
+    outputs.file "$buildDir/RunAndSweep-ML1M.html"
+}
+
 allExperiments.dependsOn allML1M

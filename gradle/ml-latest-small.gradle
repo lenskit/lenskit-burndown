@@ -21,7 +21,7 @@ task crossfoldMLLatestSmall(type: Crossfold, group: 'crossfold') {
             precision 0.5
         }
     }
-    holdout 5
+    userPartitionMethod holdout(5)
     partitionCount 5
     outputFormat 'PACK'
     includeTimestamps false

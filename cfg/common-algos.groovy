@@ -1,8 +1,5 @@
-import org.grouplens.lenskit.transform.normalize.BaselineSubtractingUserVectorNormalizer
-import org.grouplens.lenskit.transform.normalize.ItemVectorNormalizer
-import org.grouplens.lenskit.transform.normalize.MeanCenteringVectorNormalizer
-import org.grouplens.lenskit.transform.normalize.UserVectorNormalizer
-import org.grouplens.lenskit.transform.normalize.VectorNormalizer
+import org.grouplens.lenskit.iterative.IterationCount
+import org.grouplens.lenskit.transform.normalize.*
 import org.grouplens.lenskit.vectors.similarity.CosineVectorSimilarity
 import org.grouplens.lenskit.vectors.similarity.VectorSimilarity
 import org.lenskit.api.ItemScorer
@@ -14,6 +11,7 @@ import org.lenskit.knn.item.model.ItemItemBuildContext
 import org.lenskit.knn.item.model.ItemwiseBuildContextProvider
 import org.lenskit.knn.user.UserSimilarity
 import org.lenskit.knn.user.UserUserItemScorer
+import org.lenskit.mf.funksvd.FeatureCount
 import org.lenskit.mf.funksvd.FunkSVDItemScorer
 
 bind (BaselineScorer, ItemScorer) to UserMeanItemScorer
@@ -42,9 +40,15 @@ algorithm ("ItemItem") {
     within (ItemVectorNormalizer) {
         bind VectorNormalizer to MeanCenteringVectorNormalizer
     }
+    bind UserVectorNormalizer to BaselineSubtractingUserVectorNormalizer
+    within (UserVectorNormalizer) {
+        bind (BaselineScorer, ItemScorer) to ItemMeanRatingItemScorer
+    }
     set NeighborhoodSize to 20
 }
 algorithm ("FunkSVD") {
     bind ItemScorer to FunkSVDItemScorer
     bind UserVectorNormalizer to BaselineSubtractingUserVectorNormalizer
+    set FeatureCount to 40
+    set IterationCount to 125
 }

@@ -57,3 +57,8 @@ task allExperiments
 apply from: 'gradle/ml-100k.gradle'
 apply from: 'gradle/ml-latest-small.gradle'
 apply from: 'gradle/ml-1m.gradle'
+
+tasks.withType(LenskitTask).each { t ->
+    t.logFile "$buildDir/${t.name}.log"
+    t.logFileLevel 'DEBUG'
+}

@@ -1,3 +1,4 @@
+import org.grouplens.lenskit.transform.normalize.BaselineSubtractingUserVectorNormalizer
 import org.grouplens.lenskit.transform.normalize.ItemVectorNormalizer
 import org.grouplens.lenskit.transform.normalize.MeanCenteringVectorNormalizer
 import org.grouplens.lenskit.transform.normalize.UserVectorNormalizer
@@ -40,6 +41,10 @@ for (n in [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100]) {
         bind ItemItemBuildContext toProvider ItemwiseBuildContextProvider
         within (ItemVectorNormalizer) {
             bind VectorNormalizer to MeanCenteringVectorNormalizer
+        }
+        bind UserVectorNormalizer to BaselineSubtractingUserVectorNormalizer
+        within (UserVectorNormalizer) {
+            bind (BaselineScorer, ItemScorer) to ItemMeanRatingItemScorer
         }
     }
 }

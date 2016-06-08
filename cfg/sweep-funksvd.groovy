@@ -1,17 +1,14 @@
 import org.grouplens.lenskit.iterative.IterationCount
 import org.grouplens.lenskit.iterative.RegularizationTerm
-import org.grouplens.lenskit.vectors.similarity.CosineVectorSimilarity
 import org.lenskit.api.ItemScorer
 import org.lenskit.baseline.BaselineScorer
 import org.lenskit.baseline.ItemMeanRatingItemScorer
 import org.lenskit.baseline.UserMeanBaseline
 import org.lenskit.baseline.UserMeanItemScorer
-import org.lenskit.knn.item.ItemSimilarity
 import org.lenskit.mf.funksvd.FeatureCount
 import org.lenskit.mf.funksvd.FunkSVDItemScorer
 
 bind ItemScorer to FunkSVDItemScorer
-bind ItemSimilarity to CosineVectorSimilarity
 bind (UserMeanBaseline, ItemScorer) to ItemMeanRatingItemScorer
 bind (BaselineScorer, ItemScorer) to UserMeanItemScorer
 set IterationCount to 125
